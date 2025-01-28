@@ -21,16 +21,17 @@ This is my experiment on implementing end-to-end log processing pipeline. Outlin
 
 ## Key Technologies
 - docker compose : orchestration
-- NestJs : web service
-- Fluentd : log file collector 
-- Minior : object storage for collection log files
-- Airflow : data processing pipeline
-- Clickhouse : final analytic database / data warehouse
+- [NestJs](https://nestjs.com) : web service
+- [FluentBit](https://fluentbit.io) : log file collector 
+- [Minio](https://min.io) : object storage for collection log files
+- [Apache Airflow](https://airflow.apache.org) : data processing pipeline
+- [Clickhouse](https://clickhouse.com) : final analytic database / data warehouse
 
 ## Install
 1. clone repo
-2. setup airflow user:
+2. copy `.env.example` to `.env`
+3. setup airflow user:
   ```bash
-  echo -e "AIRFLOW_UID=$(id -u)" > .env
+  echo -e "AIRFLOW_UID=$(id -u)" >> .env
   ```
-3. docker compose up -d
+4. docker compose up -d

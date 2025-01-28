@@ -284,5 +284,48 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
+  nestjs:
+    build: ./nestjs
+    volumes:
+      - ./nestjs:/app
+    working_dir: /app
+    ports:
+      - '3000:3000'
+    command: "npm run start:dev"
+
+  # adapted from https://medium.com/@bnay14/shipping-docker-logs-to-amazon-s3-using-fluent-bit-9375eb7225ee
+  fluent-bit:
+    image: fluent/fluent-bit:latest
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./fluentbit/aws-credentials:/root/.aws/credentials
+      - ./fluentbit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - ./fluentbit/parser.conf:/fluent-bit/etc/parser.conf
+    command: fluent-bit -c /fluent-bit/etc/fluent-bit.conf  
+
+  minio:
+    image: 'bitnami/minio:latest'
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      - MINIO_ROOT_USER=minio-root
+      - MINIO_ROOT_PASSWORD=minio-root
+      - MINIO_DEFAULT_BUCKETS=container-logs
+    volumes:
+      - minio-volume:/bitnami/minio/data
+
+  clickhouse:
+    # we used bitnami's image as they provided easier configuration for experimental purposes
+    image: bitnami/clickhouse:latest
+    environment:
+      # the default user is username 'default' and password 'nil'
+      - ALLOW_EMPTY_PASSWORD=no
+      - CLICKHOUSE_ADMIN_PASSWORD=clickhouse-root
+    volumes:
+      - clickhouse-volume:/bitnami/clickhouse
+
 volumes:
   postgres-db-volume:
+  clickhouse-volume:
+  minio-volume:
