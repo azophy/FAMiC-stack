@@ -51,6 +51,6 @@ docker compose exec tester wrk -c 100 \
                                --latency \
                                -d "30s" \
                                -s ./script.lua \
-                               http://nestjs/dummy
+                               http://nestjs:3000/dummy
 ```
 

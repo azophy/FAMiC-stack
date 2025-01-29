@@ -302,6 +302,8 @@ services:
       - ./fluentbit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
       - ./fluentbit/parser.conf:/fluent-bit/etc/parser.conf
     command: fluent-bit -c /fluent-bit/etc/fluent-bit.conf  
+    depends_on:
+      - minio
 
   minio:
     image: 'bitnami/minio:latest'
