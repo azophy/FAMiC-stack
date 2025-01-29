@@ -325,6 +325,20 @@ services:
     volumes:
       - clickhouse-volume:/bitnami/clickhouse
 
+  # container for running load tester
+  tester:
+    build: ./tester
+    volumes:
+      - ./tester:/app
+    working_dir: /app
+    command: tail -f /dev/null
+    # resource limitation definitions. reference: https://docs.docker.com/compose/compose-file/deploy/#resources
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+
 volumes:
   postgres-db-volume:
   clickhouse-volume:

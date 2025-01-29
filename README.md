@@ -35,3 +35,22 @@ This is my experiment on implementing end-to-end log processing pipeline. Outlin
   echo -e "AIRFLOW_UID=$(id -u)" >> .env
   ```
 4. docker compose up -d
+
+## Using this repo
+### Minio
+check localhost:9001
+
+### Generating load
+Use docker compose exec to run wrk with the provided script
+
+
+```bash
+docker compose exec tester wrk -c 100 \
+                               -t 5 \
+                               --timeout 1s \
+                               --latency \
+                               -d "30s" \
+                               -s ./script.lua \
+                               http://nestjs/dummy
+```
+
