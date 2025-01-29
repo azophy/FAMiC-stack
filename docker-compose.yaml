@@ -301,6 +301,7 @@ services:
       - ./fluentbit/aws-credentials:/root/.aws/credentials
       - ./fluentbit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
       - ./fluentbit/parser.conf:/fluent-bit/etc/parser.conf
+      - ./fluentbit/formatter.lua:/fluent-bit/etc/formatter.lua
     command: fluent-bit -c /fluent-bit/etc/fluent-bit.conf  
     depends_on:
       - minio
