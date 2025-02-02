@@ -38,7 +38,7 @@ def import_docker_log_from_minio(client, minio_path):
           log,
           filepath
         FROM
-        s3('{minio_url}{minio_path}', '{minio_username}', '{minio_password}', JSONEachRow)
+        s3('{minio_url}/container-logs/{minio_path}', '{minio_username}', '{minio_password}', JSONEachRow)
         ;
     """
     client.query(query)
@@ -64,7 +64,6 @@ QUERY_GET_LATEST_DOCKER_LOG_MIGRATION="""
     where status = 'success'
     ORDER BY datetime, name DESC
     LIMIT 1
-    ;
 """
 
 
