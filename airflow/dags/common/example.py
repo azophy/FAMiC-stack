@@ -9,7 +9,7 @@ ch_client.query(clickhouse.QUERY_CREATE_DOCKER_LOG_MIGRATION_TABLE)
 
 log_list = minio.list_docker_logs(minio_client);
 for obj in log_list:
-    print(obj.object_name, obj.last_modifed, obj.size)
+    print(obj.object_name, obj.last_modified, obj.size)
     try:
         clickhouse.import_docker_log_from_minio(ch_client, '/container-logs/' + obj.object_name)
         print('success')
