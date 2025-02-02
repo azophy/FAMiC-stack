@@ -59,7 +59,7 @@ QUERY_CREATE_DOCKER_LOG_MIGRATION_TABLE="""
 """
 
 QUERY_GET_LATEST_DOCKER_LOG_MIGRATION="""
-    SELECT *
+    SELECT name
     FROM docker_logs_migrations
     where status = 'success'
     ORDER BY datetime, name DESC
