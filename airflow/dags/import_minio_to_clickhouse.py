@@ -42,12 +42,9 @@ def import_minio_to_clickhouse():
         return start_after
 
     @task.virtualenv(requirements=["clickhouse-connect", "minio"], system_site_packages=False)
-    def list_latest_docker_logfiles(start_after: string):
+    def list_latest_docker_logfiles(start_after):
         """
         #### List latest docker logfiles
-        A simple Extract task to get data ready for the rest of the data
-        pipeline. In this case, getting data is simulated by reading from a
-        hardcoded JSON string.
         """
         import common.minio_operations as minio
 
