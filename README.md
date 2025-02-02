@@ -9,7 +9,7 @@ personal experiment with Apache Airflow. based on:
 ```mermaid
 flowchart LR
     A[NestJS
-    worker] -->|Fluentd collect 
+    worker] -->|Fluentd collect
     docker log| B(Minio)
     B --> |Airflow DAG| D[Clickhouse]
 ```
@@ -22,7 +22,7 @@ This is my experiment on implementing end-to-end log processing pipeline. Outlin
 ## Key Technologies
 - docker compose : orchestration
 - [NestJs](https://nestjs.com) : web service
-- [FluentBit](https://fluentbit.io) : log file collector 
+- [FluentBit](https://fluentbit.io) : log file collector
 - [Minio](https://min.io) : object storage for collection log files
 - [Apache Airflow](https://airflow.apache.org) : data processing pipeline
 - [Clickhouse](https://clickhouse.com) : final analytic database / data warehouse
@@ -38,11 +38,13 @@ This is my experiment on implementing end-to-end log processing pipeline. Outlin
 
 ## Using this repo
 ### Minio
-check localhost:9001
+check localhost:9001 . the default user & password is 'minio-root'
+
+### Grafana
+check localhost:3002
 
 ### Generating load
 Use docker compose exec to run wrk with the provided script
-
 
 ```bash
 docker compose exec tester wrk -c 100 \
