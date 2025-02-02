@@ -31,7 +31,7 @@ def import_docker_log_from_minio(client, minio_path):
     query=f"""
         INSERT INTO docker_logs
         SELECT
-          parseDateTimeBestEffort(date) as datetime,
+          date as datetime,
           stream,
           container_id,
           container_name,
@@ -44,7 +44,7 @@ def import_docker_log_from_minio(client, minio_path):
     client.query(query)
     client.query(f"""
         INSERT INTO docker_logs_migrations(datetime, name, status)
-        VALUES(now(), {minio_path}, 'success')
+        VALUES(now(), '{minio_path}', 'success')
      """)
 
 QUERY_CREATE_DOCKER_LOG_MIGRATION_TABLE="""
