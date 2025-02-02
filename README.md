@@ -106,7 +106,7 @@ on time. To handle this, I decided to add timestamp into our filename so we woul
 the file.
 
 <p align="center">
-  <img width="800" height="600" src="./images/minio-list.png?raw=true" alt="Screenshot of collected docker log files in our Minio instance" />
+  <img width="800" height="400" src="./images/minio-list.png?raw=true" alt="Screenshot of collected docker log files in our Minio instance" />
   Screenshot of collected docker log files in our Minio instance
 </p>
 
@@ -131,7 +131,7 @@ in clean code) approach, and the "repository" which deals with interacting with 
 dependency (in this case Clickhouse & Minio)
 
 <p align="center">
-  <img width="800" height="600" src="./images/minio-list.png?raw=true" alt="Screenshot of our Airflow DAG monitoring dashboard" />
+  <img width="800" height="400" src="./images/airflow-graf.png?raw=true" alt="Screenshot of our Airflow DAG monitoring dashboard" />
   Screenshot of our Airflow DAG monitoring dashboard
 </p>
 
@@ -154,7 +154,7 @@ Click "save & test" to make sure our inputs are correct. If you notification tha
 working, you could head to "Home > Explore".
 
 <p align="center">
-  <img width="200" height="200" src="./images/grafana-log-display?raw=true" alt="Screenshot of
+  <img width="800" height="400" src="./images/grafana-log-display.png?raw=true" alt="Screenshot of
   Grafana log display interface" />
   Screenshot of Grafana log display interface
 </p>
