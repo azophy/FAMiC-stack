@@ -5,7 +5,7 @@ import pendulum
 
 from airflow.decorators import dag, task
 @dag(
-    schedule=None,
+    schedule="* * * * *",
     start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
     catchup=False,
     tags=["minio", "docker", "clickhouse"],
@@ -71,8 +71,9 @@ def import_minio_to_clickhouse():
             except Exception as err:
                 print('error:', err)
 
-    create_tables()
+    create_step = create_tables()
     start_after = get_latest_docker_log_migration()
+    create_step >> start_after
     log_list = list_latest_docker_logfiles(start_after)
     load_to_clickhouse(log_list)
 

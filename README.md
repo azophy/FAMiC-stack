@@ -94,8 +94,14 @@ the file.
 ### Airflow
 here, we build a simple DAG script to periodically check our minio instance, import into
 clickhouse, and keep track which log file we already imported. To keep track of the log file, we
-create a 'migration' table to store all log files & its import status
-(new/processing/success/error)
+create a 'migration' table to store all log files & its import status (new/processing/success/
+error).
+
+One interesting thing in our DAG is the actual import from Minio into Clickhouse is not done via
+our code. Instead, we tell Clickhouse to fetch the Minio file themselve using their powerful [S3
+integration feature](https://clickhouse.com/docs/en/integrations/s3#reading-data-from-s3). This
+not only make our code much more simple, its also makes the process way more efficient as we avoid
+processing the data in our Airflow DAG and instead let Clickhouse process it themselves.
 
 ### Clickhouse
 Our main analytical engine and "data warehouse". Clickhouse is a very powerful OLAP database with
