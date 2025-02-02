@@ -5,56 +5,67 @@ import pendulum
 
 from airflow.decorators import dag, task
 @dag(
-    schedule=None,
+    schedule="* * * * *", # run every minutes
     start_date=pendulum.datetime(2021, 1, 1, tz="UTC"),
     catchup=False,
-    tags=["example"],
+    tags=["minio", "docker", "clickhouse"],
 )
-def tutorial_taskflow_api():
+def import_minio_to_clickhouse():
     """
-    ### TaskFlow API Tutorial Documentation
-    This is a simple data pipeline example which demonstrates the use of
-    the TaskFlow API using three simple tasks for Extract, Transform, and Load.
-    Documentation that goes along with the Airflow TaskFlow API tutorial is
-    located
-    [here](https://airflow.apache.org/docs/apache-airflow/stable/tutorial_taskflow_api.html)
+    ### Import Docker Logfiles from Minio into Clickhouse with TaskFlow API
+    This is a simple data pipeline example. The repository is in
+    [github.com/azophy/docker-airflow-clickhouse-example](https://github.com/azophy/docker-minio-airflow-clickhouse-example)
     """
-    @task()
-    def extract():
+    @task.virtualenv(requirements=["clickhouse-connect", "minio"], system_site_packages=False)
+    def create_tables():
         """
-        #### Extract task
-        A simple Extract task to get data ready for the rest of the data
-        pipeline. In this case, getting data is simulated by reading from a
-        hardcoded JSON string.
+        ### Create tables task
+        Create table 'docker_logs' & 'docker_logs_migrations' if not exists
         """
-        data_string = '{"1001": 301.27, "1002": 433.21, "1003": 502.22}'
+        import common.clickhouse_operations as clickhouse
 
-        order_data_dict = json.loads(data_string)
-        return order_data_dict
-    @task(multiple_outputs=True)
-    def transform(order_data_dict: dict):
-        """
-        #### Transform task
-        A simple Transform task which takes in the collection of order data and
-        computes the total order value.
-        """
-        total_order_value = 0
+        ch_client = clickhouse.get_client()
+        ch_client.query(clickhouse.QUERY_CREATE_DOCKER_LOG_TABLE)
+        ch_client.query(clickhouse.QUERY_CREATE_DOCKER_LOG_MIGRATION_TABLE)
 
-        for value in order_data_dict.values():
-            total_order_value += value
-
-        return {"total_order_value": total_order_value}
-    @task()
-    def load(total_order_value: float):
+    @task.virtualenv(requirements=["clickhouse-connect", "minio"], system_site_packages=False)
+    def get_latest_docker_log_migration():
         """
-        #### Load task
-        A simple Load task which takes in the result of the Transform task and
-        instead of saving it to end user review, just prints it out.
+        ### Get latest docker log migration task
+        Get only latest migration to make log import more efficient
         """
+        import common.clickhouse_operations as clickhouse
 
-        print(f"Total order value is: {total_order_value:.2f}")
-    order_data = extract()
-    order_summary = transform(order_data)
-    load(order_summary["total_order_value"])
-tutorial_taskflow_api()
+        ch_client = clickhouse.get_client()
+        latest = ch_client.query(clickhouse.QUERY_GET_LATEST_DOCKER_LOG_MIGRATION)
+        start_after = latest.result_rows[0][0] if len(latest.result_rows) > 0 else None
+        return start_after
+
+    @task.virtualenv(requirements=["clickhouse-connect", "minio"], system_site_packages=False)
+    def load_to_clickhouse(start_after):
+        """
+        #### Load to clickhouse task
+        Load all listed docker logfiles into clickhouse
+        """
+        import common.clickhouse_operations as clickhouse
+        import common.minio_operations as minio
+
+        ch_client = clickhouse.get_client()
+        minio_client = minio.get_client()
+        log_list = minio.list_docker_logs(minio_client, start_after=start_after);
+
+        for obj in log_list:
+            print(obj.object_name, obj.last_modified, obj.size)
+            try:
+                clickhouse.import_docker_log_from_minio(ch_client, obj.object_name)
+                print('success')
+            except Exception as err:
+                print('error:', err)
+
+    create_step = create_tables()
+    start_after = get_latest_docker_log_migration()
+    create_step >> start_after
+    load_to_clickhouse(start_after)
+
+import_minio_to_clickhouse()
 
