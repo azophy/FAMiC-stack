@@ -4,7 +4,7 @@ import clickhouse_connect
 def get_client():
     return clickhouse_connect.get_client(
         host='clickhouse',
-        port=9000,
+        port=8123,
         username='default',
         password='clickhouse-root',
     )
@@ -42,6 +42,10 @@ def import_docker_log_from_minio(client, minio_path):
         ;
     """
     client.query(query)
+    client.query(f"""
+        INSERT INTO docker_logs_migrations(datetime, name, status)
+        VALUES(now(), {minio_path}, 'success')
+     """)
 
 QUERY_CREATE_DOCKER_LOG_MIGRATION_TABLE="""
     CREATE TABLE IF NOT EXISTS docker_logs_migrations (
@@ -54,7 +58,7 @@ QUERY_CREATE_DOCKER_LOG_MIGRATION_TABLE="""
     ;
 """
 
-QUERY_CREATE_DOCKER_LOG_MIGRATION_TABLE="""
+QUERY_GET_LATEST_DOCKER_LOG_MIGRATION="""
     SELECT *
     FROM docker_logs_migrations
     where status = 'success'

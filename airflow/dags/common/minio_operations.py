@@ -6,6 +6,7 @@ def get_client():
     return Minio("minio:9000",
         access_key="minio-root",
         secret_key="minio-root",
+        secure=False,
     )
 
 def list_docker_logs(client, start_after=None):
