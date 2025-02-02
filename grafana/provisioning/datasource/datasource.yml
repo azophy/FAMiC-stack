@@ -13,7 +13,7 @@ datasources:
       # secure: <bool>
       # dialTimeout: <seconds>
       # queryTimeout: <seconds>
-      # protocol: <native|http>
+      protocol: native
       # defaultTable: <string>
       # httpHeaders:
       # - name: X-Example-Header
