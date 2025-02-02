@@ -12,6 +12,7 @@ flowchart LR
     worker] -->|Fluentd collect
     docker log| B(Minio)
     B --> |Airflow DAG| D[Clickhouse]
+    D --> E[Grafana]
 ```
 
 This is my experiment on implementing end-to-end log processing pipeline. Outline of the pipeline:
