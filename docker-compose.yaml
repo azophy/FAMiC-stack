@@ -286,22 +286,22 @@ services:
 
   nestjs:
     build: ./nestjs
-    volumes:
-      - ./nestjs:/app
-    working_dir: /app
     ports:
       - '3000:3000'
-    command: "npm run start:dev"
+    #volumes:
+    #  - ./nestjs:/app
+    #command: "npm run start:dev"
 
   # adapted from https://medium.com/@bnay14/shipping-docker-logs-to-amazon-s3-using-fluent-bit-9375eb7225ee
-  fluent-bit:
+  fluentbit:
     image: fluent/fluent-bit:latest
     volumes:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - ./fluentbit/aws-credentials:/root/.aws/credentials
       - ./fluentbit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
       - ./fluentbit/parser.conf:/fluent-bit/etc/parser.conf
-    command: fluent-bit -c /fluent-bit/etc/fluent-bit.conf  
+      - ./fluentbit/*.lua:/fluent-bit/etc/
+    command: fluent-bit -c /fluent-bit/etc/fluent-bit.conf
     depends_on:
       - minio
 
