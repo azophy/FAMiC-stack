@@ -26,6 +26,7 @@ This is my experiment on implementing end-to-end log processing pipeline. Outlin
 - [Minio](https://min.io) : object storage for collection log files
 - [Apache Airflow](https://airflow.apache.org) : data processing pipeline
 - [Clickhouse](https://clickhouse.com) : final analytic database / data warehouse
+- [Grafana](https://grafana.com) : Visualization
 
 ## Install
 1. clone repo
@@ -43,6 +44,9 @@ check localhost:9001 . the default user & password is 'minio-root'
 ### Grafana
 check localhost:3002
 
+### Clickhouse
+the default username is 'default' with password 'clickhouse-root'
+
 ### Generating load
 Use docker compose exec to run wrk with the provided script
 
@@ -55,4 +59,23 @@ docker compose exec tester wrk -c 100 \
                                -s ./script.lua \
                                http://nestjs:3000/dummy
 ```
+
+## Pipeline Explanation
+### FluentBit
+This acts as log collector, tail-ing all docker logs in the host, adding several metadata like
+container id & name, and forwarding it to Minio
+
+### Minio
+Act as a "data lake". By introducing Minio as log storage instead of directly piping the log into
+clickhouse, we gain several advantages:
+- allow excess load handling incase there are peak traffic
+- act as backup and allow better data retention policy
+
+### Clickhouse
+Our main analytical engine and "data warehouse". Clickhouse is a very powerful OLAP database with
+lots of features & integrations
+
+### Grafana
+Our visualization tool. We use this to access Clickhouse and provide basic dashboard
+
 
