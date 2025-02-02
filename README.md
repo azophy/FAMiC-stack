@@ -45,6 +45,15 @@ check localhost:9001 . the default user & password is 'minio-root'
 ### Airflow
 availabel on localhost:8080 . the default username & password is 'airflow'
 
+airflow also provided CLI tools to execute some common administrative task. IMHO the best way to
+run it is to use `docker compose exec airflow-scheduler`. example:
+
+```bash
+$ docker compose exec airflow-scheduler airflow dags list
+$ docker compose exec airflow-scheduler airflow dags list-import-errors
+$ docker compose exec airflow-scheduler airflow tasks list import_minio_to_clickhouse
+```
+
 ### Clickhouse
 the default username is 'default' with password 'clickhouse-root'
 
@@ -77,6 +86,11 @@ we only used the docker log files, we dont get many docker related by default (i
 name). To solve that, we use some lua script to parse container_id from the FluentBit tag, and
 retrieve container config file in docker folder to finally obtain container name.
 
+<p align="center">
+  <img width="800" height="600" src="./images/fluentbit-log-result.png?raw=true" alt="Screenshot of FluentBit log parsing results" />
+  Screenshot of FluentBit log parsing results
+</p>
+
 ### Minio
 Act as a "data lake". By introducing Minio as log storage instead of directly piping the log into
 clickhouse, we gain several advantages:
@@ -91,6 +105,11 @@ spec, is regarding sorting the filename. S3 actually dont provide any way to sor
 on time. To handle this, I decided to add timestamp into our filename so we would be able to sort
 the file.
 
+<p align="center">
+  <img width="800" height="600" src="./images/minio-list.png?raw=true" alt="Screenshot of collected docker log files in our Minio instance" />
+  Screenshot of collected docker log files in our Minio instance
+</p>
+
 ### Airflow
 here, we build a simple DAG script to periodically check our minio instance, import into
 clickhouse, and keep track which log file we already imported. To keep track of the log file, we
@@ -102,6 +121,19 @@ our code. Instead, we tell Clickhouse to fetch the Minio file themselve using th
 integration feature](https://clickhouse.com/docs/en/integrations/s3#reading-data-from-s3). This
 not only make our code much more simple, its also makes the process way more efficient as we avoid
 processing the data in our Airflow DAG and instead let Clickhouse process it themselves.
+
+For the folder structure, at first I decided to experimenting with plain python to make sure the
+logic and package dependency already to my liking. I put the code into `./airflow/dags/common`
+folder to separate it with the actual DAG files. after the code is ready, I just need to create
+the DAG file and import the actual code. This approach somewhat resembles the popular "clean code"
+approach. the code is divided into the DAG file (which correspondence with controller & service
+in clean code) approach, and the "repository" which deals with interacting with third party
+dependency (in this case Clickhouse & Minio)
+
+<p align="center">
+  <img width="800" height="600" src="./images/minio-list.png?raw=true" alt="Screenshot of our Airflow DAG monitoring dashboard" />
+  Screenshot of our Airflow DAG monitoring dashboard
+</p>
 
 ### Clickhouse
 Our main analytical engine and "data warehouse". Clickhouse is a very powerful OLAP database with
@@ -121,4 +153,11 @@ for "clickhouse" and use this settings:
 Click "save & test" to make sure our inputs are correct. If you notification that data source is
 working, you could head to "Home > Explore".
 
+<p align="center">
+  <img width="200" height="200" src="./images/grafana-log-display?raw=true" alt="Screenshot of
+  Grafana log display interface" />
+  Screenshot of Grafana log display interface
+</p>
 
+## Performance Analysis
+TBD
