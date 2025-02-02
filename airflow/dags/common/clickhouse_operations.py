@@ -28,6 +28,17 @@ def import_docker_log_from_minio(client, minio_path):
     minio_url='http://minio:9000'
     minio_username='minio-root'
     minio_password='minio-root'
+
+    query_exists=f"""
+        SELECT status
+        FROM docker_logs_migrations
+        WHERE name='{minio_path}'
+    """
+    exists_result=client.query(query_exists)
+    status = exists_result.first_row[0] if (len(exists_result.result_rows) > 0) else None
+    if (status == 'success'):
+        raise Exception('this log already imported')
+
     query=f"""
         INSERT INTO docker_logs
         SELECT
@@ -41,11 +52,19 @@ def import_docker_log_from_minio(client, minio_path):
         s3('{minio_url}/container-logs/{minio_path}', '{minio_username}', '{minio_password}', JSONEachRow)
         ;
     """
-    client.query(query)
-    client.query(f"""
-        INSERT INTO docker_logs_migrations(datetime, name, status)
-        VALUES(now(), '{minio_path}', 'success')
-     """)
+    client.command(query)
+
+    if (status is None):
+        client.command(f"""
+            insert into docker_logs_migrations(datetime, name, status)
+            values(now(), '{minio_path}', 'success')
+         """)
+    else:
+        client.command(f"""
+            update docker_logs_migrations
+            set status='success'
+            where name='{minio_path}
+         """)
 
 QUERY_CREATE_DOCKER_LOG_MIGRATION_TABLE="""
     CREATE TABLE IF NOT EXISTS docker_logs_migrations (
