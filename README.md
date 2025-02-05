@@ -1,4 +1,4 @@
-![FAMiC Stack](https://github.com/user-attachments/assets/2116458c-b78e-4ab7-aabc-2ca6b059c6c2)
+![FAMiC Stack lean](https://github.com/user-attachments/assets/8884c795-d490-4a80-8719-89a58bd66427)
 
 FAMiC Stack
 ===========
