@@ -9,7 +9,7 @@ Let’s be real—tools like NewRelic and Datadog are powerful, but they’re cl
 
 That’s why I built **FAMiC**—an open-source monitoring stack with real analytics power.  
 
-- **[FluentBit](https://fluentbit.io)t** – Blazing-fast, flexible log collection.  
+- **[FluentBit](https://fluentbit.io)** – Blazing-fast, flexible log collection.  
 - **[Airflow](https://airflow.apache.org)** – A powerful data pipeline that actually processes logs, not just stores them. 
 - **[Minio](https://min.io)** – Scalable, reliable storage that won’t break the bank.   
 - **[Clickhouse](https://clickhouse.com)** – A true OLAP database, built for deep analysis at lightning speed.  
