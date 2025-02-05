@@ -1,9 +1,7 @@
+![FAMiC Stack](https://github.com/user-attachments/assets/2116458c-b78e-4ab7-aabc-2ca6b059c6c2)
+
 FAMiC Stack
 ===========
-
-Open-source monitoring stack with powerful analytics that scales effortlessly
-
-## Elevator Pitch
 
 Let’s be real—tools like NewRelic and Datadog are powerful, but they’re closed-source and insanely expensive. On the other hand, stacks like ELK and LGTM are great because they’re open-source, but at the end of the day, they’re just storing logs—not giving you the deep analysis you actually need. Logs aren’t just something to search; they’re data that needs to be correlated, processed, and analyzed properly.  
 
